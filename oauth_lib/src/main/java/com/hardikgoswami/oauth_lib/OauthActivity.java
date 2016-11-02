@@ -1,5 +1,8 @@
 package com.hardikgoswami.oauth_lib;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,6 +12,18 @@ import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 public class OauthActivity extends AppCompatActivity {
 
     public static final String GITHUB_URL = "https://github.com/login/oauth/authorize";
@@ -17,8 +32,10 @@ public class OauthActivity extends AppCompatActivity {
     public static String CODE = "";
     public static String CLIENT_ID = "";
     public static String CLIENT_SECRET = "";
+    public static String ACTIVITY_NAME = "";
     private ProgressBar spinner;
     private WebView webview;
+    private Class c;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +43,13 @@ public class OauthActivity extends AppCompatActivity {
         setContentView(R.layout.activity_oauth);
         if (getIntent().getExtras() != null) {
             CLIENT_ID = getIntent().getStringExtra("id");
+            CLIENT_SECRET = getIntent().getStringExtra("secret");
+            ACTIVITY_NAME = getIntent().getStringExtra("activity");
+        }
+        try {
+            c = Class.forName(ACTIVITY_NAME);
+        } catch (ClassNotFoundException exp) {
+            Log.d(TAG, "error :" + exp.getMessage());
         }
         spinner = (ProgressBar) findViewById(R.id.progressBar);
         spinner.setVisibility(View.VISIBLE);
@@ -70,8 +94,6 @@ public class OauthActivity extends AppCompatActivity {
                     try {
                         JSONObject jsonObject = new JSONObject(JsonData);
                         String auth_token = jsonObject.getString("access_token");
-                        // progresview.setVisibility(View.INVISIBLE);
-                        //tv_web.setText("Token found : "+auth_token);
                         Log.d(TAG, "token is :" + auth_token);
                         storeToSharedPreference(auth_token);
                     } catch (JSONException exp) {
@@ -89,13 +111,10 @@ public class OauthActivity extends AppCompatActivity {
         SharedPreferences.Editor edit = prefs.edit();
         edit.putString("oauth_token", auth_token);
         edit.commit();
-        Intent intent = new Intent(this, HomeActivity.class);
+        Intent intent = new Intent(this, c);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
     }
-
-
-}
 }

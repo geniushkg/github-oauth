@@ -22,11 +22,15 @@ public class MainActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GithubOauth.Builder()
-                        .withClientId("xxx")
-                        .withClientSecret("xxx")
-                        .withContext(context)
-                        .nextActivity(UserActivity.class);
+                /* build github oauth client using your secret
+                 and id and next activity to be launched after sucesfull authentication
+                  */
+
+//                GithubOauth.Builder()
+//                        .withClientId("xxx")
+//                        .withClientSecret("xxx")
+//                        .withContext(context)
+//                        .nextActivity(UserActivity.class);
             }
         });
     }

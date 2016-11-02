@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/github-oauth.iml" filepath="$PROJECT_DIR$/github-oauth.iml" />
-      <module fileurl="file://$PROJECT_DIR$/oauth_lib/oauth_lib.iml" filepath="$PROJECT_DIR$/oauth_lib/oauth_lib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/oauthLibGithub/oauthLibGithub.iml" filepath="$PROJECT_DIR$/oauthLibGithub/oauthLibGithub.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sample/sample.iml" filepath="$PROJECT_DIR$/sample/sample.iml" />
     </modules>
   </component>
 </project>

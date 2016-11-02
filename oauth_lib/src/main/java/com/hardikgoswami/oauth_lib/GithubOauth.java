@@ -72,7 +72,11 @@ public class GithubOauth {
     }
 
     public  void execute(){
+        String github_id = getClient_id();
+        String github_secret = getClient_secret();
         Intent intent = new Intent(appContext,OauthActivity.class);
+        intent.putExtra("id",github_id);
+        intent.putExtra("secret",github_secret);
         appContext.startActivity(intent);
     }
 }

@@ -30,3 +30,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile files('libs/okhttp.jar')
 }
+
+apply plugin: 'com.jfrog.bintray'

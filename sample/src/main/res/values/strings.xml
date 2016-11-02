@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">github_oauth_lib</string>
+    <string name="app_login_btn">Login with github</string>
 </resources>

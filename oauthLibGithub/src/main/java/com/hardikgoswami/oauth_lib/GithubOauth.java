@@ -11,7 +11,7 @@ import android.content.Intent;
 public class GithubOauth {
     private String client_id;
     private String client_secret;
-    private Activity nextActivity;
+    private Class nextActivity;
     private Context appContext;
 
     public static GithubOauth Builder() {
@@ -33,7 +33,7 @@ public class GithubOauth {
         return this;
     }
 
-    public GithubOauth nextActivity(Activity activity){
+    public GithubOauth nextActivity(Class activity){
         setNextActivity(activity);
         return this;
     }
@@ -47,9 +47,6 @@ public class GithubOauth {
         this.client_secret = client_secret;
     }
 
-    public void setNextActivity(Activity nextActivity) {
-        this.nextActivity = nextActivity;
-    }
 
     public String getClient_id() {
         return client_id;
@@ -57,10 +54,6 @@ public class GithubOauth {
 
     public String getClient_secret() {
         return client_secret;
-    }
-
-    public Activity getNextActivity() {
-        return nextActivity;
     }
 
     public Context getAppContext() {
@@ -71,10 +64,19 @@ public class GithubOauth {
         this.appContext = appContext;
     }
 
+    public Class getNextActivity() {
+        return nextActivity;
+    }
+
+    public void setNextActivity(Class nextActivity) {
+        this.nextActivity = nextActivity;
+    }
+
     public  void execute(){
         String github_id = getClient_id();
         String github_secret = getClient_secret();
         String activityName = getNextActivity().getClass().getSimpleName();
+
         Intent intent = new Intent(appContext,OauthActivity.class);
         intent.putExtra("id",github_id);
         intent.putExtra("secret",github_secret);

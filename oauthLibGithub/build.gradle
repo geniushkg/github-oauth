@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 ext {
-    bintrayRepo = 'maven'
+    bintrayRepo = 'github_oauth'
     bintrayName = 'github_oauth'
 
     publishedGroupId = 'com.github.geniushkg'

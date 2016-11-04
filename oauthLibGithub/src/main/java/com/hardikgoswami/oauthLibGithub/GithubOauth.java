@@ -80,6 +80,7 @@ public class GithubOauth {
         intent.putExtra("id",github_id);
         intent.putExtra("secret",github_secret);
         intent.putExtra("activity",activityName);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         appContext.startActivity(intent);
     }
 }

@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
                         .withClientSecret(GITHUB_SECRET)
                         .withContext(context)
                         .nextActivity(UserActivity.class)
-                        .execute();
+                         .execute();
             }
         });
     }

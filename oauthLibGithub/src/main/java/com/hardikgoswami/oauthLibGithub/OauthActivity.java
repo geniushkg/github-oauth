@@ -1,6 +1,5 @@
-package com.hardikgoswami.oauth_lib;
+package com.hardikgoswami.oauthLibGithub;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
@@ -10,7 +9,6 @@ import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;

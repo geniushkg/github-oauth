@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.hardikgoswami.oauth_lib.OauthActivity">
+    tools:context="com.hardikgoswami.oauthLibGithub.OauthActivity">
 
     <ProgressBar
         android:id="@+id/progressBar"

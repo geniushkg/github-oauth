@@ -1,4 +1,4 @@
-package com.hardikgoswami.oauth_lib;
+package com.hardikgoswami.oauthLibGithub;
 
 import org.junit.Test;
 

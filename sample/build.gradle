@@ -16,6 +16,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        all{
+            buildConfigField 'String', 'GITHUB_ID', GITHUB_CLIENT
+            buildConfigField 'String', 'GITHUB_SECRET', GITHUB_SECRET
+        }
     }
 }
 

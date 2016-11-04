@@ -1,17 +1,21 @@
 package com.hardikgoswami.github_oauth_lib;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
-import com.hardikgoswami.oauth_lib.GithubOauth;
+import com.hardikgoswami.oauthLibGithub.*;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final String GITHUB_ID = BuildConfig.GITHUB_ID;
+    public static final String GITHUB_SECRET = BuildConfig.GITHUB_SECRET;
     Button loginButton;
     Context context;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,17 +28,14 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 GithubOauth
                         .Builder()
+                        .withClientId(GITHUB_ID)
+                        .withClientSecret(GITHUB_SECRET)
+                        .withContext(context)
                         .nextActivity(UserActivity.class)
-                        .withContext(getApplicationContext())
-                        .withClientSecret("xxxx")
-                        .withClientId("xxx")
                         .execute();
             }
         });
     }
-
-
-
 
 
 }

@@ -1,6 +1,5 @@
-package com.hardikgoswami.oauth_lib;
+package com.hardikgoswami.oauthLibGithub;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 

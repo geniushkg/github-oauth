@@ -12,8 +12,7 @@ ext {
     siteUrl = 'https://github.com/geniushkg/github-oauth/'
     gitUrl = 'https://github.com/geniushkg/github-oauth.git'
 
-    libraryVersion = '0.2.2'
-
+    libraryVersion = '1.0.0'
     developerId = 'geniushkg'
     developerName = 'Hardik Goswami'
     developerEmail = 'geniushkg@gmail.com'

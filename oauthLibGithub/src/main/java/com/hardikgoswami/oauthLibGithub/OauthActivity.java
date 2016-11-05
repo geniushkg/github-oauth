@@ -26,14 +26,16 @@ public class OauthActivity extends AppCompatActivity {
 
     public static final String GITHUB_URL = "https://github.com/login/oauth/authorize";
     public static final String GITHUB_OAUTH = "https://github.com/login/oauth/access_token";
-    private static final String TAG = OauthActivity.class.getSimpleName();
+    private static final String TAG = "github-oauth";
     public static String CODE = "";
     public static String CLIENT_ID = "";
     public static String CLIENT_SECRET = "";
     public static String ACTIVITY_NAME = "";
+    public static String PACKAGE = "";
     private ProgressBar spinner;
     private WebView webview;
     private Class c;
+    private boolean debug;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,12 +45,17 @@ public class OauthActivity extends AppCompatActivity {
             CLIENT_ID = getIntent().getStringExtra("id");
             CLIENT_SECRET = getIntent().getStringExtra("secret");
             ACTIVITY_NAME = getIntent().getStringExtra("activity");
+            debug = getIntent().getBooleanExtra("debug",false);
+            PACKAGE = getIntent().getStringExtra("package");
+        }else {
+            Log.d(TAG,"intent extras null");
         }
-        try {
-            c = Class.forName(ACTIVITY_NAME);
-        } catch (ClassNotFoundException exp) {
-            Log.d(TAG, "error :" + exp.getMessage());
-        }
+        if(debug)Log.d(TAG,"intent recieved is -client id :"+CLIENT_ID+"-secret:"+CLIENT_SECRET+"-activit : "+ACTIVITY_NAME+"-Package : "+PACKAGE);
+//        try {
+//            c = Class.forName(ACTIVITY_NAME);
+//        } catch (ClassNotFoundException exp) {
+//            if (debug)Log.d(TAG, "error :" + exp.getMessage());
+//        }
         spinner = (ProgressBar) findViewById(R.id.progressBar);
         spinner.setVisibility(View.VISIBLE);
         webview = (WebView) findViewById(R.id.webview);
@@ -57,9 +64,13 @@ public class OauthActivity extends AppCompatActivity {
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 super.shouldOverrideUrlLoading(view, url);
                 CODE = url.substring(url.lastIndexOf("?code=") + 1);
-                Log.d(TAG, "code fetched is :" + CODE);
+                if (debug) Log.d(TAG, "code fetched is :" + CODE);
                 String[] token_code = CODE.split("=");
-                fetchOauthTokenWithCode(token_code[1]);
+                if (debug) Log.d(TAG, "code token :" + token_code[1]);
+                String tokenFetchedIs = token_code[1];
+                String[] cleanToken = tokenFetchedIs.split("&");
+                if(debug) Log.d(TAG, "token cleaned is :"+cleanToken[0]);
+                fetchOauthTokenWithCode(cleanToken[0]);
                 return false;
             }
         });
@@ -81,23 +92,25 @@ public class OauthActivity extends AppCompatActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                if (debug)  Log.d(TAG,"IOException :"+e.getMessage());
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String JsonData = response.body().string();
-                    Log.d(TAG, "response is:" + JsonData);
+                    if (debug)  Log.d(TAG, "response is:" + JsonData);
                     try {
                         JSONObject jsonObject = new JSONObject(JsonData);
                         String auth_token = jsonObject.getString("access_token");
-                        Log.d(TAG, "token is :" + auth_token);
+                        if (debug)    Log.d(TAG, "token is :" + auth_token);
                         storeToSharedPreference(auth_token);
                     } catch (JSONException exp) {
-                        Log.d(TAG, "json exception :" + exp.getMessage());
+                        if (debug)   Log.d(TAG, "json exception :" + exp.getMessage());
                     }
 
+                }else {
+                    Log.d(TAG, "onResponse: not success : "+response.message());
                 }
 
             }
@@ -109,7 +122,8 @@ public class OauthActivity extends AppCompatActivity {
         SharedPreferences.Editor edit = prefs.edit();
         edit.putString("oauth_token", auth_token);
         edit.commit();
-        Intent intent = new Intent(this, c);
+        Intent intent = new Intent();
+        intent.setClassName(PACKAGE,ACTIVITY_NAME);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();

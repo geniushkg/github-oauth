@@ -10,8 +10,26 @@ import android.content.Intent;
 public class GithubOauth {
     private String client_id;
     private String client_secret;
-    private Class nextActivity;
+    private String nextActivity;
     private Context appContext;
+    private boolean debug;
+    private String packageName;
+
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
+    }
+
+    public boolean isDebug() {
+        return debug;
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
 
     public static GithubOauth Builder() {
         return new GithubOauth();
@@ -32,8 +50,17 @@ public class GithubOauth {
         return this;
     }
 
-    public GithubOauth nextActivity(Class activity){
+    public GithubOauth nextActivity(String activity){
         setNextActivity(activity);
+        return this;
+    }
+
+    public GithubOauth debug(boolean active){
+        setDebug(active);
+        return this;
+    }
+    public GithubOauth packageName(String packageName){
+        setPackageName(packageName);
         return this;
     }
 
@@ -63,23 +90,24 @@ public class GithubOauth {
         this.appContext = appContext;
     }
 
-    public Class getNextActivity() {
+    public String getNextActivity() {
         return nextActivity;
     }
 
-    public void setNextActivity(Class nextActivity) {
+    public void setNextActivity(String nextActivity) {
         this.nextActivity = nextActivity;
     }
 
     public  void execute(){
         String github_id = getClient_id();
         String github_secret = getClient_secret();
-        String activityName = getNextActivity().getClass().getSimpleName();
-
+        String activityName = getNextActivity();
         Intent intent = new Intent(appContext,OauthActivity.class);
         intent.putExtra("id",github_id);
         intent.putExtra("secret",github_secret);
-        intent.putExtra("activity",activityName);
+        intent.putExtra("debug",debug);
+        intent.putExtra("package",packageName);
+        intent.putExtra("activity",nextActivity);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         appContext.startActivity(intent);
     }

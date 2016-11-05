@@ -31,7 +31,9 @@ public class MainActivity extends AppCompatActivity {
                         .withClientId(GITHUB_ID)
                         .withClientSecret(GITHUB_SECRET)
                         .withContext(context)
-                        .nextActivity(UserActivity.class)
+                        .packageName("com.hardikgoswami.github_oauth_lib")
+                        .nextActivity("com.hardikgoswami.github_oauth_lib.UserActivity")
+                        .debug(true)
                          .execute();
             }
         });

@@ -3,8 +3,15 @@ Simple library to integrate github authentication to android app using Oauth.
 
 ## Installation
 
-    compile 'com.github.geniushkg:github_oauth:0.2.2'
+    compile 'com.github.geniushkg:github_oauth:1.0.0'
 
+Add to manifest 
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+and activity declaration:
+
+    <activity android:name="com.hardikgoswami.oauthLibGithub.OauthActivity"/>
 ##Github Auth Flow
 Initialise new Auth instance with credentials</br>
 1. Client id : you get it from your github profile by creating new app.</br>
@@ -15,22 +22,28 @@ Initialise new Auth instance with credentials</br>
 **Sample initialization :**
 
 
-        // Github ID and secret are generated in github.com profile 
+        // Github ID and secret are generated in github.com profile
+		// package name is your packagename
+		// next activity is your activity with full name including package 
+		// you can use debug(true) for logcat , use TAG = "github-oauth"
+
 		loginButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                GithubOauth
+                 GithubOauth
                         .Builder()
                         .withClientId(GITHUB_ID)
                         .withClientSecret(GITHUB_SECRET)
                         .withContext(context)
-                        .nextActivity(UserActivity.class)
+                        .packageName("com.hardikgoswami.github_oauth_lib")
+                        .nextActivity("com.hardikgoswami.github_oauth_lib.UserActivity")
+                        .debug(true)
                          .execute();
             }
         });
 
-**Note : ** Callback url can as per your requirement or make it http://localhost will registering new Oauth application.
+**Note :** Callback url can as per your requirement or make it http://localhost will registering new Oauth application.
 
 
 Execute will launch a new activity with webview and user token will be stored in shared prerence

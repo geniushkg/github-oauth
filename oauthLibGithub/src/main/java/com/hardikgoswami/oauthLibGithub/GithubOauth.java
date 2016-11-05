@@ -3,11 +3,8 @@ package com.hardikgoswami.oauthLibGithub;
 import android.content.Context;
 import android.content.Intent;
 
-/**
- * Created by geniushkg on 11/2/2016.
- */
 
-public class GithubOauth {
+    public class GithubOauth {
     private String client_id;
     private String client_secret;
     private String nextActivity;
@@ -98,6 +95,10 @@ public class GithubOauth {
         this.nextActivity = nextActivity;
     }
 
+        /**
+         * This method will execute the instance created , client_id ,
+         * client_secret , packagename and activity fully qualified is must
+          */
     public  void execute(){
         String github_id = getClient_id();
         String github_secret = getClient_secret();

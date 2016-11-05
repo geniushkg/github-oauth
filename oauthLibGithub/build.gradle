@@ -1,18 +1,18 @@
 apply plugin: 'com.android.library'
 ext {
     bintrayRepo = 'github_oauth'
-    bintrayName = 'github_oauth'
+    bintrayName = 'oauthLibGithub'
 
     publishedGroupId = 'com.github.geniushkg'
     libraryName = 'oauthLibGithub'
-    artifact = 'github_oauth'
+    artifact = 'oauthLibGithub'
 
     libraryDescription = 'A wrapper for Github authentication on Android'
 
     siteUrl = 'https://github.com/geniushkg/github-oauth/'
     gitUrl = 'https://github.com/geniushkg/github-oauth.git'
 
-    libraryVersion = '1.0.0'
+    libraryVersion = '1.0.1'
     developerId = 'geniushkg'
     developerName = 'Hardik Goswami'
     developerEmail = 'geniushkg@gmail.com'

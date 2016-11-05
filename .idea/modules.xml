@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/github-oauth.iml" filepath="$PROJECT_DIR$/github-oauth.iml" />
       <module fileurl="file://$PROJECT_DIR$/oauthLibGithub/oauthLibGithub.iml" filepath="$PROJECT_DIR$/oauthLibGithub/oauthLibGithub.iml" />
-      <module fileurl="file://$PROJECT_DIR$/sample/sample.iml" filepath="$PROJECT_DIR$/sample/sample.iml" />
     </modules>
   </component>
 </project>

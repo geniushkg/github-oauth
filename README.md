@@ -43,19 +43,24 @@ Initialise new Auth instance with credentials</br>
             }
         });
 
-**Note :** Callback url can as per your requirement or make it http://localhost will registering new Oauth application.
+**Note :** Callback url can be as per your requirement or make it http://localhost while registering new Oauth application.
 
 
-Execute will launch a new activity with webview and user token will be stored in shared prerence
+Execute will launch a new activity with webview and user token will be stored in shared preference
 
 
 shared preference name : github_prefs
 
 String in preference : oauth_token
 
+		// Sample to read logged in user oauth token
+        public static final String PREFERENCE = "github_prefs";
+		sharedPreferences = getSharedPreferences(PREFERENCE, 0);
+        String oauthToken = sharedPreferences.getString("oauth_token", null);
+        Log.d(TAG, "oauth token for github loged in user is :" + oauthToken);
 
 if you found any bug you can create issue or want to contribute feel free to PR.
 
 For new programmer's -> do not hesitate , please send PR we both will learn something new. :)
 
-[https://twitter.com/geniushkg](https://twitter.com/geniushkg "Goswami Hardik")
+[twitter](https://twitter.com/geniushkg "Goswami Hardik") - [linkedIn](https://www.linkedin.com/in/geniushkg "Goswami Hardik") - [blog](http://hardikgoswami.com "Goswami Hardik") 

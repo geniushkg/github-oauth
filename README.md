@@ -26,6 +26,8 @@ Initialise new Auth instance with credentials</br>
 		// package name is your packagename
 		// next activity is your activity with full name including package 
 		// you can use debug(true) for logcat , use TAG = "github-oauth"
+		
+		// scope can also be defined (optional)
 
 		loginButton.setOnClickListener(new View.OnClickListener() {
 

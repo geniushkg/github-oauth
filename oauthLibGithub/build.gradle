@@ -7,12 +7,12 @@ ext {
     libraryName = 'oauthLibGithub'
     artifact = 'oauthLibGithub'
 
-    libraryDescription = 'A wrapper for Github authentication on Android'
+    libraryDescription = 'A wrapper for Github Oauth authentication on Android'
 
     siteUrl = 'https://github.com/geniushkg/github-oauth/'
     gitUrl = 'https://github.com/geniushkg/github-oauth.git'
 
-    libraryVersion = '1.0.1'
+    libraryVersion = '1.0.2'
     developerId = 'geniushkg'
     developerName = 'Hardik Goswami'
     developerEmail = 'geniushkg@gmail.com'

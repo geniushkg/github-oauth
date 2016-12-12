@@ -14,6 +14,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -35,22 +38,31 @@ public class OauthActivity extends AppCompatActivity {
     private ProgressBar spinner;
     private WebView webview;
     private Class c;
+    private boolean isScopeDefined;
     private boolean debug;
+    public List<String> scopeList;
+    public String scopeAppendToUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_oauth);
+        scopeList = new ArrayList<>();
         if (getIntent().getExtras() != null) {
             CLIENT_ID = getIntent().getStringExtra("id");
             CLIENT_SECRET = getIntent().getStringExtra("secret");
             ACTIVITY_NAME = getIntent().getStringExtra("activity");
-            debug = getIntent().getBooleanExtra("debug",false);
+            debug = getIntent().getBooleanExtra("debug", false);
             PACKAGE = getIntent().getStringExtra("package");
-        }else {
-            Log.d(TAG,"intent extras null");
+            isScopeDefined = getIntent().getBooleanExtra("isScopeDefined", false);
+            if (isScopeDefined) {
+                scopeList = getIntent().getStringArrayListExtra("scope_list");
+            }
+        } else {
+            Log.d(TAG, "intent extras null");
         }
-        if(debug)Log.d(TAG,"intent recieved is -client id :"+CLIENT_ID+"-secret:"+CLIENT_SECRET+"-activit : "+ACTIVITY_NAME+"-Package : "+PACKAGE);
+        if (debug)
+            Log.d(TAG, "intent recieved is -client id :" + CLIENT_ID + "-secret:" + CLIENT_SECRET + "-activit : " + ACTIVITY_NAME + "-Package : " + PACKAGE);
 //        try {
 //            c = Class.forName(ACTIVITY_NAME);
 //        } catch (ClassNotFoundException exp) {
@@ -58,6 +70,12 @@ public class OauthActivity extends AppCompatActivity {
 //        }
         spinner = (ProgressBar) findViewById(R.id.progressBar);
         spinner.setVisibility(View.VISIBLE);
+        if (isScopeDefined) {
+            scopeAppendToUrl = getCsvFromList(scopeList);
+        } else {
+            scopeAppendToUrl = "";
+        }
+        Log.d(TAG, "onCreate: Scope request are : " + scopeAppendToUrl);
         webview = (WebView) findViewById(R.id.webview);
         webview.setWebViewClient(new WebViewClient() {
             @Override
@@ -69,12 +87,17 @@ public class OauthActivity extends AppCompatActivity {
                 if (debug) Log.d(TAG, "code token :" + token_code[1]);
                 String tokenFetchedIs = token_code[1];
                 String[] cleanToken = tokenFetchedIs.split("&");
-                if(debug) Log.d(TAG, "token cleaned is :"+cleanToken[0]);
+                if (debug) Log.d(TAG, "token cleaned is :" + cleanToken[0]);
                 fetchOauthTokenWithCode(cleanToken[0]);
                 return false;
             }
         });
-        String url_load = GITHUB_URL + "?client_id=" + CLIENT_ID;
+        String url_load = "";
+        if (isScopeDefined) {
+            url_load = GITHUB_URL + "?client_id=" + CLIENT_ID + "&scope=" + scopeAppendToUrl;
+        } else {
+            url_load = GITHUB_URL + "?client_id=" + CLIENT_ID;
+        }
         webview.loadUrl(url_load);
     }
 
@@ -92,25 +115,25 @@ public class OauthActivity extends AppCompatActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                if (debug)  Log.d(TAG,"IOException :"+e.getMessage());
+                if (debug) Log.d(TAG, "IOException :" + e.getMessage());
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String JsonData = response.body().string();
-                    if (debug)  Log.d(TAG, "response is:" + JsonData);
+                    if (debug) Log.d(TAG, "response is:" + JsonData);
                     try {
                         JSONObject jsonObject = new JSONObject(JsonData);
                         String auth_token = jsonObject.getString("access_token");
-                        if (debug)    Log.d(TAG, "token is :" + auth_token);
+                        if (debug) Log.d(TAG, "token is :" + auth_token);
                         storeToSharedPreference(auth_token);
                     } catch (JSONException exp) {
-                        if (debug)   Log.d(TAG, "json exception :" + exp.getMessage());
+                        if (debug) Log.d(TAG, "json exception :" + exp.getMessage());
                     }
 
-                }else {
-                    Log.d(TAG, "onResponse: not success : "+response.message());
+                } else {
+                    Log.d(TAG, "onResponse: not success : " + response.message());
                 }
 
             }
@@ -123,9 +146,20 @@ public class OauthActivity extends AppCompatActivity {
         edit.putString("oauth_token", auth_token);
         edit.commit();
         Intent intent = new Intent();
-        intent.setClassName(PACKAGE,ACTIVITY_NAME);
+        intent.setClassName(PACKAGE, ACTIVITY_NAME);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
+    }
+
+    public String getCsvFromList(List<String> scopeList) {
+        String csvString = "";
+
+        for (int i = 0; i < scopeList.size() - 1; i++) {
+            csvString = csvString + scopeList.get(i) + ",";
+        }
+        csvString = csvString + scopeList.get(scopeList.size() - 1);
+
+        return csvString;
     }
 }

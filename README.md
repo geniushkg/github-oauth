@@ -3,7 +3,7 @@ Simple library to integrate github authentication to android app using Oauth.
 
 ## Installation
 
-    compile 'com.github.geniushkg:oauthLibGithub:1.0.1'
+    compile 'com.github.geniushkg:oauthLibGithub:1.0.2'
 
 Add to manifest 
 

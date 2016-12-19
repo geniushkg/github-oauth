@@ -1,5 +1,5 @@
 # github-oauth
-Simple library to integrate github authentication to android app using Oauth.
+Simple library to integrate Github authentication to android app using oAuth.
 
 ## Installation
 

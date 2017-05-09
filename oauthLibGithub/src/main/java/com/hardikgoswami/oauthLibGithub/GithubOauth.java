@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 
 public class GithubOauth {
@@ -131,10 +129,14 @@ public class GithubOauth {
         intent.putExtra("debug", debug);
         intent.putExtra("package", packageName);
         intent.putExtra("activity", nextActivity);
-        if (scopeList.size()>0){
-        intent.putStringArrayListExtra("scope_list",scopeList);
-        intent.putExtra("isScopeDefined",true);
-        }else {
+        if (scopeList != null) {
+            if (scopeList.size()>0){
+                intent.putStringArrayListExtra("scope_list",scopeList);
+                intent.putExtra("isScopeDefined",true);
+            } else {
+                intent.putExtra("isScopeDefined",false);
+            }
+        } else {
             intent.putExtra("isScopeDefined",false);
         }
 

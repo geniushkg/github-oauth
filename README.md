@@ -1,5 +1,5 @@
 # github-oauth
-Simple library to integrate Github authentication to android app using oAuth.
+Simple library to integrate Github authentication to android app using OAuth.
 
 ## Installation
 
@@ -12,7 +12,7 @@ Add to manifest
 and activity declaration:
 
     <activity android:name="com.hardikgoswami.oauthLibGithub.OauthActivity"/>
-##Github Auth Flow
+## Github Auth Flow
 Initialise new Auth instance with credentials</br>
 1. Client id : you get it from your github profile by creating new app.</br>
 2. Client Secret : same as above.</br>
@@ -63,6 +63,6 @@ String in preference : oauth_token
 
 if you found any bug you can create issue or want to contribute feel free to PR.
 
-For new programmer's -> do not hesitate , please send PR we both will learn something new. :)
+For new programmer's -> do not hesitate, please send PR we both will learn something new. :)
 
 [twitter](https://twitter.com/geniushkg "Goswami Hardik") - [linkedIn](https://www.linkedin.com/in/geniushkg "Goswami Hardik") - [blog](http://hardikgoswami.com "Goswami Hardik") 

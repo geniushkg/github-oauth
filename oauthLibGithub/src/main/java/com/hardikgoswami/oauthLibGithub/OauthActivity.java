@@ -143,6 +143,16 @@ public class OauthActivity extends AppCompatActivity {
         });
     }
 
+    // Allow web view to go back a page.
+    @Override
+    public void onBackPressed() {
+        if (webview.canGoBack()) {
+            webview.goBack();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     private void storeToSharedPreference(String auth_token) {
         SharedPreferences prefs = getSharedPreferences("github_prefs", MODE_PRIVATE);
         SharedPreferences.Editor edit = prefs.edit();

@@ -81,14 +81,17 @@ public class OauthActivity extends AppCompatActivity {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 super.shouldOverrideUrlLoading(view, url);
-                CODE = url.substring(url.lastIndexOf("?code=") + 1);
-                if (debug) Log.d(TAG, "code fetched is :" + CODE);
-                String[] token_code = CODE.split("=");
-                if (debug) Log.d(TAG, "code token :" + token_code[1]);
-                String tokenFetchedIs = token_code[1];
-                String[] cleanToken = tokenFetchedIs.split("&");
-                if (debug) Log.d(TAG, "token cleaned is :" + cleanToken[0]);
-                fetchOauthTokenWithCode(cleanToken[0]);
+                // Try catch to allow in app browsing without crashing.
+                try {
+                    CODE = url.substring(url.lastIndexOf("?code=") + 1);
+                    if (debug) Log.d(TAG, "code fetched is :" + CODE);
+                    String[] token_code = CODE.split("=");
+                    if (debug) Log.d(TAG, "code token :" + token_code[1]);
+                    String tokenFetchedIs = token_code[1];
+                    String[] cleanToken = tokenFetchedIs.split("&");
+                    if (debug) Log.d(TAG, "token cleaned is :" + cleanToken[0]);
+                    fetchOauthTokenWithCode(cleanToken[0]);
+                } catch (NullPointerException | ArrayIndexOutOfBoundsException e) {}
                 return false;
             }
         });

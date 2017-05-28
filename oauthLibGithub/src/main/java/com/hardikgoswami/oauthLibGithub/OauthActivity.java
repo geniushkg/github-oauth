@@ -77,6 +77,7 @@ public class OauthActivity extends AppCompatActivity {
         }
         Log.d(TAG, "onCreate: Scope request are : " + scopeAppendToUrl);
         webview = (WebView) findViewById(R.id.webview);
+        webview.getSettings().setJavaScriptEnabled(true);
         webview.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {

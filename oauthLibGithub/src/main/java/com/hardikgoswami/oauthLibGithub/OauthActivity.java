@@ -2,9 +2,12 @@ package com.hardikgoswami.oauthLibGithub;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.webkit.CookieManager;
+import android.webkit.ValueCallback;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -39,6 +42,7 @@ public class OauthActivity extends AppCompatActivity {
     private boolean isScopeDefined = false;
     private boolean debug = false;
     public List<String> scopeList;
+    private boolean openNextActivity = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,14 +52,17 @@ public class OauthActivity extends AppCompatActivity {
         scopeList = new ArrayList<>();
         scopeAppendToUrl = "";
 
-        if (getIntent().getExtras() != null) {
-            CLIENT_ID = getIntent().getStringExtra("id");
-            PACKAGE = getIntent().getStringExtra("package");
-            CLIENT_SECRET = getIntent().getStringExtra("secret");
-            ACTIVITY_NAME = getIntent().getStringExtra("activity");
-            debug = getIntent().getBooleanExtra("debug", false);
-            isScopeDefined = getIntent().getBooleanExtra("isScopeDefined", false);
-            clearDataBeforeLaunch = getIntent().getBooleanExtra("clearData", false);
+        Intent intent = getIntent();
+
+        if (intent.getExtras() != null) {
+            CLIENT_ID = intent.getStringExtra("id");
+            PACKAGE = intent.getStringExtra("package");
+            CLIENT_SECRET = intent.getStringExtra("secret");
+            ACTIVITY_NAME = intent.getStringExtra("activity");
+            debug = intent.getBooleanExtra("debug", false);
+            isScopeDefined = intent.getBooleanExtra("isScopeDefined", false);
+            clearDataBeforeLaunch = intent.getBooleanExtra("clearData", false);
+            openNextActivity = intent.getBooleanExtra("openNextActivity", false);
         } else {
             Log.d(TAG, "intent extras null");
             finish();
@@ -64,7 +71,7 @@ public class OauthActivity extends AppCompatActivity {
         String url_load = GITHUB_URL + "?client_id=" + CLIENT_ID;
 
         if (isScopeDefined) {
-            scopeList = getIntent().getStringArrayListExtra("scope_list");
+            scopeList = intent.getStringArrayListExtra("scope_list");
             scopeAppendToUrl = getCsvFromList(scopeList);
             url_load += "&scope=" + scopeAppendToUrl;
         }
@@ -75,7 +82,10 @@ public class OauthActivity extends AppCompatActivity {
         }
 
         // TODO: 7/24/2017 Clear the cache and cookies of the webView if clearDataBeforeLaunch is true
-        
+        if (clearDataBeforeLaunch) {
+            clearDataBeforeLaunch();
+        }
+
         webview = (WebView) findViewById(R.id.webview);
         webview.getSettings().setJavaScriptEnabled(true);
         webview.setWebViewClient(new WebViewClient() {
@@ -98,8 +108,25 @@ public class OauthActivity extends AppCompatActivity {
                 return false;
             }
         });
-        
+
         webview.loadUrl(url_load);
+    }
+
+    private void clearDataBeforeLaunch() {
+        CookieManager cookieManager = CookieManager.getInstance();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            cookieManager.removeAllCookies(new ValueCallback<Boolean>() {
+                // a callback which is executed when the cookies have been removed
+                @Override
+                public void onReceiveValue(Boolean aBoolean) {
+                    Log.d(TAG, "Cookie removed: " + aBoolean);
+                }
+            });
+        } else {
+            //noinspection deprecation
+            cookieManager.removeAllCookie();
+        }
     }
 
     private void fetchOauthTokenWithCode(String code) {
@@ -116,7 +143,11 @@ public class OauthActivity extends AppCompatActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                if (debug) Log.d(TAG, "IOException :" + e.getMessage());
+                if (debug) {
+                    Log.d(TAG, "IOException :" + e.getMessage());
+                }
+
+                finishActivity(false);
             }
 
             @Override
@@ -150,6 +181,8 @@ public class OauthActivity extends AppCompatActivity {
                         Log.d(TAG, "onResponse: not success : " + response.message());
                     }
                 }
+
+                finishActivity(openNextActivity);
             }
         });
     }
@@ -170,12 +203,21 @@ public class OauthActivity extends AppCompatActivity {
 
         edit.putString("oauth_token", auth_token);
         edit.apply();
+    }
 
-        // TODO: 7/24/2017 Only open a new activity if specified
-        Intent intent = new Intent();
-        intent.setClassName(PACKAGE, ACTIVITY_NAME);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
+    /**
+     * Finish this activity and open the next activity if specified
+     *
+     * @param openNextActivity true to open next activity after closing this
+     */
+    private void finishActivity(boolean openNextActivity) {
+
+        if (openNextActivity) {
+            Intent intent = new Intent();
+            intent.setClassName(PACKAGE, ACTIVITY_NAME);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
 
         finish();
     }
@@ -193,7 +235,7 @@ public class OauthActivity extends AppCompatActivity {
             if (!csvString.equals("")) {
                 csvString += ",";
             }
-            
+
             csvString += scope;
         }
 

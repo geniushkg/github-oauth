@@ -15,6 +15,7 @@ public class GithubOauth {
     private String packageName;
     private ArrayList<String> scopeList;
     private boolean clearBeforeLauch;
+    private boolean openNextActivity;
 
     public boolean isDebug() {
         return debug;
@@ -93,6 +94,17 @@ public class GithubOauth {
         return this;
     }
 
+    /**
+     * Whether to open or not the activity specified as next
+     *
+     * @param openNextActivity true to open the next activity
+     * @return An instance of this class
+     */
+    public GithubOauth openNextActivity(boolean openNextActivity) {
+        this.openNextActivity = openNextActivity;
+        return this;
+    }
+
     public void setClient_id(String client_id) {
         this.client_id = client_id;
     }
@@ -134,6 +146,8 @@ public class GithubOauth {
         ArrayList<String> scopeList = getScopeList();
         String github_id = getClient_id();
         String github_secret = getClient_secret();
+        boolean hasScope = scopeList != null && scopeList.size() > 0;
+
         Intent intent = new Intent(getAppContext(), OauthActivity.class);
         intent.putExtra("id", github_id);
         intent.putExtra("secret", github_secret);
@@ -141,14 +155,12 @@ public class GithubOauth {
         intent.putExtra("package", getPackageName());
         intent.putExtra("activity", getNextActivity());
         intent.putExtra("clearData", clearBeforeLauch);
-
-        boolean hasScope = scopeList != null && scopeList.size() > 0;
+        intent.putExtra("openNextActivity", openNextActivity);
+        intent.putExtra("isScopeDefined", hasScope);
 
         if (hasScope) {
             intent.putStringArrayListExtra("scope_list", scopeList);
         }
-
-        intent.putExtra("isScopeDefined", hasScope);
 
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         appContext.startActivity(intent);

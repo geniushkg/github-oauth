@@ -2,20 +2,17 @@ package com.hardikgoswami.oauthLibGithub;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ProgressBar;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import okhttp3.Call;
@@ -31,51 +28,54 @@ public class OauthActivity extends AppCompatActivity {
     public static final String GITHUB_OAUTH = "https://github.com/login/oauth/access_token";
     private static final String TAG = "github-oauth";
     public static String CODE = "";
+    public static String PACKAGE = "";
     public static String CLIENT_ID = "";
     public static String CLIENT_SECRET = "";
     public static String ACTIVITY_NAME = "";
-    public static String PACKAGE = "";
-    private ProgressBar spinner;
+    public String scopeAppendToUrl = "";
     private WebView webview;
     private Class c;
-    private boolean isScopeDefined;
-    private boolean debug;
+    private boolean clearDataBeforeLaunch = false;
+    private boolean isScopeDefined = false;
+    private boolean debug = false;
     public List<String> scopeList;
-    public String scopeAppendToUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_oauth);
+
         scopeList = new ArrayList<>();
+        scopeAppendToUrl = "";
+
         if (getIntent().getExtras() != null) {
             CLIENT_ID = getIntent().getStringExtra("id");
+            PACKAGE = getIntent().getStringExtra("package");
             CLIENT_SECRET = getIntent().getStringExtra("secret");
             ACTIVITY_NAME = getIntent().getStringExtra("activity");
             debug = getIntent().getBooleanExtra("debug", false);
-            PACKAGE = getIntent().getStringExtra("package");
             isScopeDefined = getIntent().getBooleanExtra("isScopeDefined", false);
-            if (isScopeDefined) {
-                scopeList = getIntent().getStringArrayListExtra("scope_list");
-            }
+            clearDataBeforeLaunch = getIntent().getBooleanExtra("clearData", false);
         } else {
             Log.d(TAG, "intent extras null");
+            finish();
         }
-        if (debug)
-            Log.d(TAG, "intent recieved is -client id :" + CLIENT_ID + "-secret:" + CLIENT_SECRET + "-activit : " + ACTIVITY_NAME + "-Package : " + PACKAGE);
-//        try {
-//            c = Class.forName(ACTIVITY_NAME);
-//        } catch (ClassNotFoundException exp) {
-//            if (debug)Log.d(TAG, "error :" + exp.getMessage());
-//        }
-        spinner = (ProgressBar) findViewById(R.id.progressBar);
-        spinner.setVisibility(View.VISIBLE);
+
+        String url_load = GITHUB_URL + "?client_id=" + CLIENT_ID;
+
         if (isScopeDefined) {
+            scopeList = getIntent().getStringArrayListExtra("scope_list");
             scopeAppendToUrl = getCsvFromList(scopeList);
-        } else {
-            scopeAppendToUrl = "";
+            url_load += "&scope=" + scopeAppendToUrl;
         }
-        Log.d(TAG, "onCreate: Scope request are : " + scopeAppendToUrl);
+
+        if (debug) {
+            Log.d(TAG, "intent received is -client id :" + CLIENT_ID + "-secret:" + CLIENT_SECRET + "-activity : " + ACTIVITY_NAME + "-Package : " + PACKAGE);
+            Log.d(TAG, "onCreate: Scope request are : " + scopeAppendToUrl);
+        }
+
+        // TODO: 7/24/2017 Clear the cache and cookies of the webView if clearDataBeforeLaunch is true
+        
         webview = (WebView) findViewById(R.id.webview);
         webview.getSettings().setJavaScriptEnabled(true);
         webview.setWebViewClient(new WebViewClient() {
@@ -92,16 +92,13 @@ public class OauthActivity extends AppCompatActivity {
                     String[] cleanToken = tokenFetchedIs.split("&");
                     if (debug) Log.d(TAG, "token cleaned is :" + cleanToken[0]);
                     fetchOauthTokenWithCode(cleanToken[0]);
-                } catch (NullPointerException | ArrayIndexOutOfBoundsException e) {}
+                } catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
+                    e.printStackTrace();
+                }
                 return false;
             }
         });
-        String url_load = "";
-        if (isScopeDefined) {
-            url_load = GITHUB_URL + "?client_id=" + CLIENT_ID + "&scope=" + scopeAppendToUrl;
-        } else {
-            url_load = GITHUB_URL + "?client_id=" + CLIENT_ID;
-        }
+        
         webview.loadUrl(url_load);
     }
 
@@ -124,22 +121,35 @@ public class OauthActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+
                 if (response.isSuccessful()) {
                     String JsonData = response.body().string();
-                    if (debug) Log.d(TAG, "response is:" + JsonData);
+
+                    if (debug) {
+                        Log.d(TAG, "response is:" + JsonData);
+                    }
+
                     try {
                         JSONObject jsonObject = new JSONObject(JsonData);
                         String auth_token = jsonObject.getString("access_token");
-                        if (debug) Log.d(TAG, "token is :" + auth_token);
+
                         storeToSharedPreference(auth_token);
+
+                        if (debug) {
+                            Log.d(TAG, "token is :" + auth_token);
+                        }
+
                     } catch (JSONException exp) {
-                        if (debug) Log.d(TAG, "json exception :" + exp.getMessage());
+                        if (debug) {
+                            Log.d(TAG, "json exception :" + exp.getMessage());
+                        }
                     }
 
                 } else {
-                    Log.d(TAG, "onResponse: not success : " + response.message());
+                    if (debug) {
+                        Log.d(TAG, "onResponse: not success : " + response.message());
+                    }
                 }
-
             }
         });
     }
@@ -157,22 +167,35 @@ public class OauthActivity extends AppCompatActivity {
     private void storeToSharedPreference(String auth_token) {
         SharedPreferences prefs = getSharedPreferences("github_prefs", MODE_PRIVATE);
         SharedPreferences.Editor edit = prefs.edit();
+
         edit.putString("oauth_token", auth_token);
-        edit.commit();
+        edit.apply();
+
+        // TODO: 7/24/2017 Only open a new activity if specified
         Intent intent = new Intent();
         intent.setClassName(PACKAGE, ACTIVITY_NAME);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
+
         finish();
     }
 
+    /**
+     * Generate a comma separated list of scopes out of the
+     *
+     * @param scopeList list of scopes as defined
+     * @return comma separated list of scopes
+     */
     public String getCsvFromList(List<String> scopeList) {
         String csvString = "";
 
-        for (int i = 0; i < scopeList.size() - 1; i++) {
-            csvString = csvString + scopeList.get(i) + ",";
+        for (String scope : scopeList) {
+            if (!csvString.equals("")) {
+                csvString += ",";
+            }
+            
+            csvString += scope;
         }
-        csvString = csvString + scopeList.get(scopeList.size() - 1);
 
         return csvString;
     }

@@ -14,6 +14,7 @@ public class GithubOauth {
     private boolean debug;
     private String packageName;
     private ArrayList<String> scopeList;
+    private boolean clearBeforeLauch;
 
     public boolean isDebug() {
         return debug;
@@ -24,7 +25,7 @@ public class GithubOauth {
     }
 
     public void setScopeList(ArrayList<String> scopeList) {
-        this.scopeList = new ArrayList<String>();
+        this.scopeList = new ArrayList<>();
         this.scopeList = scopeList;
     }
 
@@ -75,11 +76,22 @@ public class GithubOauth {
         return this;
     }
 
-    public GithubOauth withScopeList(ArrayList<String> scopeList){
+    public GithubOauth withScopeList(ArrayList<String> scopeList) {
         setScopeList(scopeList);
         return this;
     }
 
+    /**
+     * Whether the app should clear all data (cookies and cache) before launching a new instance of
+     * the webView
+     *
+     * @param clearBeforeLauch true to clear data
+     * @return An instance of this class
+     */
+    public GithubOauth clearDataBeforeLauch(boolean clearBeforeLauch) {
+        this.clearBeforeLauch = clearBeforeLauch;
+        return this;
+    }
 
     public void setClient_id(String client_id) {
         this.client_id = client_id;
@@ -122,23 +134,21 @@ public class GithubOauth {
         ArrayList<String> scopeList = getScopeList();
         String github_id = getClient_id();
         String github_secret = getClient_secret();
-        String activityName = getNextActivity();
-        Intent intent = new Intent(appContext, OauthActivity.class);
+        Intent intent = new Intent(getAppContext(), OauthActivity.class);
         intent.putExtra("id", github_id);
         intent.putExtra("secret", github_secret);
-        intent.putExtra("debug", debug);
-        intent.putExtra("package", packageName);
-        intent.putExtra("activity", nextActivity);
-        if (scopeList != null) {
-            if (scopeList.size()>0){
-                intent.putStringArrayListExtra("scope_list",scopeList);
-                intent.putExtra("isScopeDefined",true);
-            } else {
-                intent.putExtra("isScopeDefined",false);
-            }
-        } else {
-            intent.putExtra("isScopeDefined",false);
+        intent.putExtra("debug", isDebug());
+        intent.putExtra("package", getPackageName());
+        intent.putExtra("activity", getNextActivity());
+        intent.putExtra("clearData", clearBeforeLauch);
+
+        boolean hasScope = scopeList != null && scopeList.size() > 0;
+
+        if (hasScope) {
+            intent.putStringArrayListExtra("scope_list", scopeList);
         }
+
+        intent.putExtra("isScopeDefined", hasScope);
 
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         appContext.startActivity(intent);

@@ -7,14 +7,6 @@
     android:orientation="vertical"
     tools:context="com.hardikgoswami.oauthLibGithub.OauthActivity">
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:visibility="gone"/>
-
     <WebView
         android:id="@+id/webview"
         android:layout_width="match_parent"

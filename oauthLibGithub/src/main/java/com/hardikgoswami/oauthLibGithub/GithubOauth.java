@@ -1,5 +1,6 @@
 package com.hardikgoswami.oauthLibGithub;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
@@ -7,15 +8,15 @@ import java.util.ArrayList;
 
 
 public class GithubOauth {
+    private static final int REQUEST_CODE = 1000;
     private String client_id;
     private String client_secret;
     private String nextActivity;
-    private Context appContext;
+    private Activity appContext;
     private boolean debug;
     private String packageName;
     private ArrayList<String> scopeList;
-    private boolean clearBeforeLauch;
-    private boolean openNextActivity;
+    private boolean clearBeforeLaunch;
 
     public boolean isDebug() {
         return debug;
@@ -38,7 +39,6 @@ public class GithubOauth {
         this.packageName = packageName;
     }
 
-
     public void setDebug(boolean debug) {
         this.debug = debug;
     }
@@ -47,6 +47,16 @@ public class GithubOauth {
         return new GithubOauth();
     }
 
+
+    public GithubOauth withContext(Activity activity) {
+        setAppContext(activity);
+        return this;
+    }
+
+    /**
+     * @deprecated Use withContext(Activity) instead
+     */
+    @Deprecated
     public GithubOauth withContext(Context context) {
         setAppContext(context);
         return this;
@@ -86,22 +96,11 @@ public class GithubOauth {
      * Whether the app should clear all data (cookies and cache) before launching a new instance of
      * the webView
      *
-     * @param clearBeforeLauch true to clear data
+     * @param clearBeforeLaunch true to clear data
      * @return An instance of this class
      */
-    public GithubOauth clearDataBeforeLauch(boolean clearBeforeLauch) {
-        this.clearBeforeLauch = clearBeforeLauch;
-        return this;
-    }
-
-    /**
-     * Whether to open or not the activity specified as next
-     *
-     * @param openNextActivity true to open the next activity
-     * @return An instance of this class
-     */
-    public GithubOauth openNextActivity(boolean openNextActivity) {
-        this.openNextActivity = openNextActivity;
+    public GithubOauth clearBeforeLaunch(boolean clearBeforeLaunch) {
+        this.clearBeforeLaunch = clearBeforeLaunch;
         return this;
     }
 
@@ -126,8 +125,16 @@ public class GithubOauth {
         return appContext;
     }
 
-    public void setAppContext(Context appContext) {
+    public void setAppContext(Activity appContext) {
         this.appContext = appContext;
+    }
+
+    /**
+     * @deprecated Use setAppContext(Activity) instead
+     */
+    @Deprecated
+    public void setAppContext(Context appContext) {
+        this.appContext = (Activity) appContext;
     }
 
     public String getNextActivity() {
@@ -139,8 +146,10 @@ public class GithubOauth {
     }
 
     /**
-     * This method will execute the instance created , client_id ,
-     * client_secret , packagename and activity fully qualified is must
+     * This method will execute the instance created. The activity of login will be launched and
+     * it will return a result after finishing its execution. The result will be one of the constants
+     * hold in the class {@link ResultCode}
+     * client_id, client_secret, package name and activity fully qualified are required
      */
     public void execute() {
         ArrayList<String> scopeList = getScopeList();
@@ -150,12 +159,11 @@ public class GithubOauth {
 
         Intent intent = new Intent(getAppContext(), OauthActivity.class);
         intent.putExtra("id", github_id);
-        intent.putExtra("secret", github_secret);
         intent.putExtra("debug", isDebug());
+        intent.putExtra("secret", github_secret);
         intent.putExtra("package", getPackageName());
         intent.putExtra("activity", getNextActivity());
-        intent.putExtra("clearData", clearBeforeLauch);
-        intent.putExtra("openNextActivity", openNextActivity);
+        intent.putExtra("clearData", clearBeforeLaunch);
         intent.putExtra("isScopeDefined", hasScope);
 
         if (hasScope) {
@@ -163,6 +171,6 @@ public class GithubOauth {
         }
 
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        appContext.startActivity(intent);
+        appContext.startActivityForResult(intent, REQUEST_CODE);
     }
 }

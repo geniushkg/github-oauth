@@ -1,5 +1,6 @@
 package com.hardikgoswami.oauthLibGithub;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -29,21 +30,24 @@ public class OauthActivity extends AppCompatActivity {
 
     public static final String GITHUB_URL = "https://github.com/login/oauth/authorize";
     public static final String GITHUB_OAUTH = "https://github.com/login/oauth/access_token";
-    private static final String TAG = "github-oauth";
     public static String CODE = "";
     public static String PACKAGE = "";
     public static String CLIENT_ID = "";
     public static String CLIENT_SECRET = "";
     public static String ACTIVITY_NAME = "";
+
+    private static final String TAG = "github-oauth";
+
     public String scopeAppendToUrl = "";
+    public List<String> scopeList;
+
     private WebView webview;
-    private Class c;
+
     private boolean clearDataBeforeLaunch = false;
     private boolean isScopeDefined = false;
     private boolean debug = false;
-    public List<String> scopeList;
-    private boolean openNextActivity = false;
 
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +66,6 @@ public class OauthActivity extends AppCompatActivity {
             debug = intent.getBooleanExtra("debug", false);
             isScopeDefined = intent.getBooleanExtra("isScopeDefined", false);
             clearDataBeforeLaunch = intent.getBooleanExtra("clearData", false);
-            openNextActivity = intent.getBooleanExtra("openNextActivity", false);
         } else {
             Log.d(TAG, "intent extras null");
             finish();
@@ -87,6 +90,11 @@ public class OauthActivity extends AppCompatActivity {
         }
 
         webview = (WebView) findViewById(R.id.webview);
+
+        if (webview == null) {
+            return;
+        }
+
         webview.getSettings().setJavaScriptEnabled(true);
         webview.setWebViewClient(new WebViewClient() {
             @Override
@@ -95,13 +103,15 @@ public class OauthActivity extends AppCompatActivity {
                 // Try catch to allow in app browsing without crashing.
                 try {
                     CODE = url.substring(url.lastIndexOf("?code=") + 1);
-                    if (debug) Log.d(TAG, "code fetched is :" + CODE);
                     String[] token_code = CODE.split("=");
-                    if (debug) Log.d(TAG, "code token :" + token_code[1]);
-                    String tokenFetchedIs = token_code[1];
-                    String[] cleanToken = tokenFetchedIs.split("&");
-                    if (debug) Log.d(TAG, "token cleaned is :" + cleanToken[0]);
+                    String[] cleanToken = token_code[1].split("&");
                     fetchOauthTokenWithCode(cleanToken[0]);
+
+                    if (debug) {
+                        Log.d(TAG, "code fetched is: " + CODE);
+                        Log.d(TAG, "code token: " + token_code[1]);
+                        Log.d(TAG, "token cleaned is: " + cleanToken[0]);
+                    }
                 } catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
                     e.printStackTrace();
                 }
@@ -140,14 +150,15 @@ public class OauthActivity extends AppCompatActivity {
                 .header("Accept", "application/json")
                 .url(url_oauth)
                 .build();
+
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 if (debug) {
-                    Log.d(TAG, "IOException :" + e.getMessage());
+                    Log.d(TAG, "IOException: " + e.getMessage());
                 }
 
-                finishActivity(false);
+                finishThisActivity(ResultCode.ERROR);
             }
 
             @Override
@@ -157,7 +168,7 @@ public class OauthActivity extends AppCompatActivity {
                     String JsonData = response.body().string();
 
                     if (debug) {
-                        Log.d(TAG, "response is:" + JsonData);
+                        Log.d(TAG, "response is: " + JsonData);
                     }
 
                     try {
@@ -167,22 +178,22 @@ public class OauthActivity extends AppCompatActivity {
                         storeToSharedPreference(auth_token);
 
                         if (debug) {
-                            Log.d(TAG, "token is :" + auth_token);
+                            Log.d(TAG, "token is: " + auth_token);
                         }
 
                     } catch (JSONException exp) {
                         if (debug) {
-                            Log.d(TAG, "json exception :" + exp.getMessage());
+                            Log.d(TAG, "json exception: " + exp.getMessage());
                         }
                     }
 
                 } else {
                     if (debug) {
-                        Log.d(TAG, "onResponse: not success : " + response.message());
+                        Log.d(TAG, "onResponse: not success: " + response.message());
                     }
                 }
 
-                finishActivity(openNextActivity);
+                finishThisActivity(ResultCode.SUCCESS);
             }
         });
     }
@@ -206,19 +217,12 @@ public class OauthActivity extends AppCompatActivity {
     }
 
     /**
-     * Finish this activity and open the next activity if specified
+     * Finish this activity and returns the result
      *
-     * @param openNextActivity true to open next activity after closing this
+     * @param resultCode one of the constants from the class ResultCode
      */
-    private void finishActivity(boolean openNextActivity) {
-
-        if (openNextActivity) {
-            Intent intent = new Intent();
-            intent.setClassName(PACKAGE, ACTIVITY_NAME);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-        }
-
+    private void finishThisActivity(int resultCode) {
+        setResult(resultCode);
         finish();
     }
 

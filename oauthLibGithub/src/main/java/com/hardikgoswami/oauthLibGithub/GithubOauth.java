@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 
 public class GithubOauth {
-    private static final int REQUEST_CODE = 1000;
+    public static final int REQUEST_CODE = 1000;
     private String client_id;
     private String client_secret;
     private String nextActivity;

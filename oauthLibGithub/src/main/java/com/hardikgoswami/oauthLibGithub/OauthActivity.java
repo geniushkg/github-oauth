@@ -80,7 +80,11 @@ public class OauthActivity extends AppCompatActivity {
         }
 
         if (debug) {
-            Log.d(TAG, "intent received is -client id :" + CLIENT_ID + "-secret:" + CLIENT_SECRET + "-activity : " + ACTIVITY_NAME + "-Package : " + PACKAGE);
+            Log.d(TAG, "intent received is "
+                    + "\n-client id: " + CLIENT_ID
+                    + "\n-secret:" + CLIENT_SECRET
+                    + "\n-activity: " + ACTIVITY_NAME
+                    + "\n-Package: " + PACKAGE);
             Log.d(TAG, "onCreate: Scope request are : " + scopeAppendToUrl);
         }
 
@@ -145,7 +149,9 @@ public class OauthActivity extends AppCompatActivity {
         url.addQueryParameter("client_id", CLIENT_ID);
         url.addQueryParameter("client_secret", CLIENT_SECRET);
         url.addQueryParameter("code", code);
+
         String url_oauth = url.build().toString();
+
         final Request request = new Request.Builder()
                 .header("Accept", "application/json")
                 .url(url_oauth)

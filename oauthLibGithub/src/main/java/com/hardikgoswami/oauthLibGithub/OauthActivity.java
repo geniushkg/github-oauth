@@ -105,6 +105,8 @@ public class OauthActivity extends AppCompatActivity {
                 super.shouldOverrideUrlLoading(view, url);
                 // Try catch to allow in app browsing without crashing.
                 try {
+                    if (!url.contains("?code=")) return false;
+
                     CODE = url.substring(url.lastIndexOf("?code=") + 1);
                     String[] token_code = CODE.split("=");
                     String tokenFetchedIs = token_code[1];

@@ -170,7 +170,6 @@ public class GithubOauth {
             intent.putStringArrayListExtra("scope_list", scopeList);
         }
 
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         appContext.startActivityForResult(intent, REQUEST_CODE);
     }
 }

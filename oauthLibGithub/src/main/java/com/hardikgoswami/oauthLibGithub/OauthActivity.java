@@ -88,7 +88,6 @@ public class OauthActivity extends AppCompatActivity {
             Log.d(TAG, "onCreate: Scope request are : " + scopeAppendToUrl);
         }
 
-        // TODO: 7/24/2017 Clear the cache and cookies of the webView if clearDataBeforeLaunch is true
         if (clearDataBeforeLaunch) {
             clearDataBeforeLaunch();
         }
@@ -108,7 +107,9 @@ public class OauthActivity extends AppCompatActivity {
                 try {
                     CODE = url.substring(url.lastIndexOf("?code=") + 1);
                     String[] token_code = CODE.split("=");
-                    String[] cleanToken = token_code[1].split("&");
+                    String tokenFetchedIs = token_code[1];
+                    String[] cleanToken = tokenFetchedIs.split("&");
+
                     fetchOauthTokenWithCode(cleanToken[0]);
 
                     if (debug) {

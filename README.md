@@ -91,6 +91,12 @@ String in preference : oauth_token
 
 if you found any bug you can create issue or want to contribute feel free to PR.
 
+## Contributor's 
+_________________________________________________
+[darvid7](https://github.com/darvid7 "Darvid7")
+[jdamacena](https://github.com/jdamacena "jdamacena")
+
+
 For new programmer's -> do not hesitate, please send PR we both will learn something new. :)
 
 [twitter](https://twitter.com/geniushkg "Goswami Hardik") - [linkedIn](https://www.linkedin.com/in/geniushkg "Goswami Hardik") - [blog](http://hardikgoswami.com "Goswami Hardik") 

@@ -14,7 +14,7 @@ and activity declaration:
     <activity android:name="com.hardikgoswami.oauthLibGithub.OauthActivity"/>
 ## Github Auth Flow
 Initialise new Auth instance with credentials</br>
-1. Client id : you get it from your github profile by creating new app.</br>
+1. Client id : you get it from your github profile by creating new app.</br> [Follow this tutorial](https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/)
 2. Client Secret : same as above.</br>
 3. NextActivity : Thats your activity you want launch after user gets authenticated.</br>
 4. Context : you  can use context variable from place where initiate the process that is getActivity() from fragment or getapplicationcontext() from activity.
